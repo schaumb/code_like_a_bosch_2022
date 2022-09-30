@@ -7,17 +7,16 @@
 #include <SDL.h>
 #include <SDL_opengles2.h>
 #include <SDL_video.h>
+#include "gui.h"
 
 
-struct Context {
-    SDL_Window*     g_Window = nullptr;
-    SDL_GLContext   g_GLContext = SDL_GL_CreateContext(g_Window);
-    
-    void the_main_loop() const;
-    
-    template<auto mptr>
-    constexpr static auto to_ptr = +[](void* ctx) { (static_cast<const Context*>(ctx)->*mptr)(); };
-};
+Context::Context(SDL_Window* window)
+    : g_Window(window)
+    , g_GLContext(SDL_GL_CreateContext(g_Window))
+{}
+
+template<auto mptr>
+constexpr static auto to_ptr = +[](void* ctx) { (static_cast<Context*>(ctx)->*mptr)(); };
 
 int main(int, char**)
 {
@@ -67,10 +66,10 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(context.g_Window, context.g_GLContext);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    emscripten_set_main_loop_arg(Context::to_ptr<&Context::the_main_loop>, &context, 0, true);
+    emscripten_set_main_loop_arg(to_ptr<&Context::the_main_loop>, &context, 0, true);
 }
 
-void Context::the_main_loop() const
+void Context::the_main_loop()
 {
     ImGuiIO& io = ImGui::GetIO();
 
@@ -78,7 +77,7 @@ void Context::the_main_loop() const
     while (SDL_PollEvent(&event))
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        // Capture events here, based on io.WantCaptureMouse and io.WantCaptureKeyboard
+        event_handler(event);
     }
 
     // Start the Dear ImGui frame
@@ -88,14 +87,11 @@ void Context::the_main_loop() const
 
     ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_Always);
     ImGui::SetNextWindowPos({}, ImGuiCond_Always);
-    static bool show_another_window{true};
-    if (show_another_window) {
-        ImGui::Begin("Window", &show_another_window, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);         // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello from window!");
-        if (ImGui::Button("Close Me"))
-            show_another_window = false;
-        ImGui::End();
-    }
+    ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+    add_things();
+
+    ImGui::End();
 
     // Rendering
     ImGui::Render();
