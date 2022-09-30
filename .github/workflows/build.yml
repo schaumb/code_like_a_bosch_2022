@@ -33,8 +33,8 @@ jobs:
           pushd emsdk-master
           source ./emsdk_env.sh
           popd
-          pushd imgui-1.88
-          make -C examples/example_emscripten_opengl3
+
+          make
 
       - name: Push Changes
         uses: actions-x/commit@v6
