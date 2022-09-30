@@ -13,7 +13,9 @@
 Context::Context(SDL_Window* window)
     : g_Window(window)
     , g_GLContext(SDL_GL_CreateContext(g_Window))
-{}
+{
+    init();
+}
 
 template<auto mptr>
 constexpr static auto to_ptr = +[](void* ctx) { (static_cast<Context*>(ctx)->*mptr)(); };
@@ -85,8 +87,8 @@ void Context::the_main_loop()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_Always);
-    ImGui::SetNextWindowPos({}, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(io.DisplaySize);
+    ImGui::SetNextWindowPos({});
     ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
     add_things();

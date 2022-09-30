@@ -12,6 +12,8 @@ struct Context {
     explicit Context(SDL_Window*);
     void the_main_loop();
 
+
+    void init();
     void event_handler(const SDL_Event&) {}
 
     void add_things();
