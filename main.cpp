@@ -41,7 +41,7 @@ int main(int, char**)
     SDL_GetCurrentDisplayMode(0, &current);
 
     Context context {
-        SDL_CreateWindow("Hack like a Bosch - 2022", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
+        SDL_CreateWindow("Code like a Bosch - 🚷🛣️🚓 Highway Notifier - 2022", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
                          static_cast<SDL_WindowFlags>(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)),
     };
     
