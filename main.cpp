@@ -43,7 +43,7 @@ int main(int, char**)
 
     Context context {
         SDL_CreateWindow("Hack like a Bosch - 2022", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
-                         static_cast<SDL_WindowFlags>(SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI)),
+                         static_cast<SDL_WindowFlags>(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)),
     };
     
     if (!context.g_GLContext)
@@ -86,10 +86,12 @@ void Context::the_main_loop() const
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_Always);
+    ImGui::SetNextWindowPos({}, ImGuiCond_Always);
     static bool show_another_window{true};
     if (show_another_window) {
-        ImGui::Begin("Another Window", &show_another_window, ImGuiWindowFlags_NoTitleBar);         // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello from another window!");
+        ImGui::Begin("Window", &show_another_window, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);         // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Hello from window!");
         if (ImGui::Button("Close Me"))
             show_another_window = false;
         ImGui::End();
