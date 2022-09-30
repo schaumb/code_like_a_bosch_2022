@@ -40,5 +40,5 @@ jobs:
         uses: actions-x/commit@v6
         with:
           branch: web
-          files: web
+          files: imgui-1.88/web
           force: true
