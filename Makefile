@@ -15,7 +15,7 @@
 
 CC = emcc
 CXX = em++
-WEB_DIR = web
+WEB_DIR = .
 EXE = $(WEB_DIR)/index.html
 IMGUI_DIR = imgui-1.88
 SOURCES = main.cpp
