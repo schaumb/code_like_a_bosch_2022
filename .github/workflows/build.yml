@@ -35,3 +35,10 @@ jobs:
           popd
           pushd imgui-1.88
           make -C examples/example_emscripten_opengl3
+
+      - name: Push Changes
+        uses: actions-x/commit@v6
+        with:
+          branch: web
+          files: web
+          force: true
