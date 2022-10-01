@@ -18,6 +18,9 @@ struct Context {
     void event_handler(const SDL_Event&) {}
 
     [[nodiscard]] ImVec2 transform_point(const ImVec2& from) const;
+    [[nodiscard]] ImVec2 transform_size(const ImVec2& from) const;
+    [[nodiscard]] float transform_size(const float& from) const;
+
     void add_things() const;
 };
 

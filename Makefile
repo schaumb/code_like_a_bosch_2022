@@ -88,4 +88,4 @@ $(EXE): $(OBJS) $(WEB_DIR)
 	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -rf $(OBJS) $(WEB_DIR)
+	rm -rf $(OBJS)
