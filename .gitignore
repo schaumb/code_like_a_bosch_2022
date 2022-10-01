@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Directories
+.idea
+imgui-1.88

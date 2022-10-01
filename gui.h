@@ -21,7 +21,7 @@ struct Context {
     [[nodiscard]] ImVec2 transform_size(const ImVec2& from) const;
     [[nodiscard]] float transform_size(const float& from) const;
 
-    void add_things() const;
+    void add_things();
 };
 
 #endif //HACK_LIKE_A_BOSCH_2022_GUI_H
