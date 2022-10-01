@@ -47,7 +47,6 @@ void Context::draw_background() {
     using namespace ImGui;
     
     ImGuiIO& io = GetIO();
-    scale = std::fmin(io.DisplaySize.x / 210, io.DisplaySize.y / 110);
 
 
     ImDrawList* p = GetWindowDrawList();
