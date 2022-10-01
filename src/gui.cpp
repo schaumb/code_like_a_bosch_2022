@@ -1,21 +1,21 @@
 #include <imgui.h>
 #include "gui.h"
 #include <utility>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 
-std::string fakeLogs[4] = {
+constexpr std::string_view fakeLogs[4] = {
     "Accident happened",
     "Nothing creative",
     "Almost crashed",
     "Pedestrian in danger"
 };
 
-const std::string currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
+std::string currentDateTime() {
+    time_t     now = time(nullptr);
+    struct tm  tstruct{};
+    char       buf[80]{};
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
 
@@ -56,15 +56,15 @@ void Context::draw_background() {
     // Right line
     p->AddLine({io.DisplaySize.x-5, 0}, { io.DisplaySize.x-5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
     // Middle dotted line
-    for (float i = 0; i < 10; i++) {
-        float y = -45 + i * 25;
+    for (int i = 0; i < 10; ++i) {
+        auto y = static_cast<float>(-45 + i * 25);
         p->AddRectFilled(transform_point({-0.5f, y}), transform_point({0.5f, y - 10}), ImColor{ 1.f, 1.f, 1.f, 1.f });
     }
 }
 
 void Context::init() {
     reader.emplace();
-    srand(time(NULL));
+    srand(time(nullptr));
 }
 
 void Context::create_log_window() {
@@ -148,11 +148,11 @@ void Context::add_things() {
             p->AddCircleFilled(transform_point({point.y, -point.x}), transform_size(0.4), color);
         }
     }
-
-    if (ImGui::IsKeyReleased((ImGuiKey)557)) {
-        std::string textToLog = fakeLogs[rand() % 4];
+    static_assert(ImGuiKey_L == 557);
+    if (ImGui::IsKeyReleased(ImGuiKey_L)) {
+        std::string_view textToLog = fakeLogs[rand() % 4];
         std::string datetime = currentDateTime();
-        add_log(datetime + " - " + textToLog);
+        add_log(datetime + " - " + textToLog.data());
     }
 
     // add car
