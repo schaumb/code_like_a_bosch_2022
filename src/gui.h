@@ -6,6 +6,7 @@
 #include <optional>
 #include <new>
 #include "reader.h"
+#include "play.h"
 
 typedef struct SDL_Window SDL_Window;
 typedef union SDL_Event SDL_Event;
@@ -17,6 +18,7 @@ struct Context {
     float scale;
     std::vector<std::string> logs;
     std::optional<Reader> reader;
+    std::optional<Play> player;
 
     explicit Context(SDL_Window*);
     void the_main_loop();

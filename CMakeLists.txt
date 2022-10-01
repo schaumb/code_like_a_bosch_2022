@@ -12,6 +12,6 @@ include_directories(SDL2Test /usr/include/SDL2 ../emsdk/upstream/emscripten/cach
 include_directories(${IMGUI_DIR})
 add_executable(hack_like_a_bosch_2022
         ${SRC_DIR}/main.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp
-        ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp ${SRC_DIR}/gui.cpp ${SRC_DIR}/reader.cpp)
+        ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp ${SRC_DIR}/gui.cpp ${SRC_DIR}/reader.cpp ${SRC_DIR}/play.cpp)
 
 target_link_libraries(hack_like_a_bosch_2022)

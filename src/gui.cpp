@@ -51,7 +51,7 @@ void Context::create_log_window() {
 void Context::add_things() {
     using namespace ImGui;
     ImGuiIO& io = GetIO();
-    scale = std::fmin(io.DisplaySize.x / 210, io.DisplaySize.y / 110);
+    scale = std::fmin(io.DisplaySize.x / 20, io.DisplaySize.y / 50);
 
 
     ImDrawList* p = GetWindowDrawList();
@@ -70,23 +70,54 @@ void Context::add_things() {
         if (ImGui::BeginCombo("##choose", reader->selected,
                               ImGuiComboFlags_HeightSmall | ImGuiComboFlags_NoArrowButton)) {
             for (auto &selectable: reader->directories)
-                if (ImGui::Selectable(selectable.c_str()))
+                if (ImGui::Selectable(selectable.c_str())) {
                     reader->set_selected(selectable);
+                    player.reset();
+                }
 
             ImGui::EndCombo();
         }
         ImGui::End();
     }
 
-    if (reader->loading)
+    if (reader->loading) {
         p->AddRectFilled({300, io.DisplaySize.y - 20},
-                       {300 +
-                        (io.DisplaySize.x - 300) *
-                        static_cast<float>(static_cast<double>(reader->curr) / static_cast<double>(reader->max)),
-                        io.DisplaySize.y},
-                       ImColor{1.f, 0.f, 0.f, 1.f});
+                         {300 +
+                          (io.DisplaySize.x - 300) *
+                          static_cast<float>(static_cast<double>(reader->curr) / static_cast<double>(reader->max)),
+                          io.DisplaySize.y},
+                         ImColor{1.f, 0.f, 0.f, 1.f});
+    }
 
     ImGui::EndDisabled();
+
+    if (!reader->loading && !reader->file_data.empty() && !player) {
+        player.emplace(*reader);
+        player->time = static_cast<float>(reader->file_data.front().time);
+    } else if (player && !player->end) {
+        player->time += io.DeltaTime;
+        if (player->time > reader->file_data.back().time) {
+            player->end = true;
+        }
+    }
+    if (player && !player->end) {
+        auto&& list = reader->get_points_at(player->time);
+
+        for (auto& [point, color] : list) {
+            p->AddCircleFilled(transform_point({point.y, -point.x}), transform_size(0.4), color);
+        }
+    }
+
+
+    // add car
+    p->AddRectFilled(transform_point({-0.6286, -3.4738}), transform_point({0.738, 0.7664}), ImColor{ .5f, .5f, .5f, 1.f });
+
+    // add radars
+    for (auto&& point : {ImVec2{0.6286, -3.4738}, {0.738, 0.7664}, {-0.6286, -3.4738}, {-0.738, 0.7664}}) {
+        p->AddCircleFilled(transform_point(point), transform_size(0.5), ImColor{0.f, 1.f, 0.f, 1.f});
+    }
+    // add front camera
+    p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.5), ImColor{0.f, 1.f, 1.f, 1.f});
 
     /*
     p->AddRectFilled(transform_point({}), transform_point({100, 50}), ImColor{1.0f, 0.f, 0.f, 1.0f});
@@ -101,5 +132,5 @@ void Context::add_things() {
    // Middle dotted line
    p->AddRectFilled(transform_point({0, -50}), transform_point({1, -55}), ImColor{ 1.f, 1.f, 1.f, 1.f });
 
-   p->AddCircle(transform_point({}), 50, ImColor{ 1.f, 0.f, 0.f, 1.f});
+   // p->AddCircle(transform_point({}), 50, ImColor{ 1.f, 0.f, 0.f, 1.f});
 }

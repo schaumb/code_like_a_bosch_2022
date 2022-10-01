@@ -4,18 +4,26 @@
 #include <iostream>
 #include <fstream>
 #include <emscripten.h>
+#include <sstream>
 
 std::istream& operator>>(std::istream& in, Data& data) {
     std::string buf;
-    in >> std::skipws;
-    if (!std::getline(in, buf, ',') || buf.empty()) {
+    if (!std::getline(in, buf) || buf.empty()) {
+        in.setstate(std::ios::eofbit);
+        return in;
+    }
+
+    std::stringstream ss{buf};
+    ss >> std::skipws;
+
+    if (!std::getline(ss, buf, ',') || buf.empty()) {
         in.setstate(std::ios::eofbit);
         return in;
     };
     data.time = std::stof(buf);
 
 
-    auto get = [&] { std::getline(in, buf, ','); return std::stof(buf); };
+    auto get = [&] { std::getline(ss, buf, ','); return std::stof(buf); };
     get(); // ignore sensor ts data
     for (auto& setter : {+[](Data::CamData& cd, float v) { cd.d.x = v / 128; },
                          +[](Data::CamData& cd, float v) { cd.d.y = v / 128; },
@@ -41,7 +49,7 @@ std::istream& operator>>(std::istream& in, Data& data) {
                 setter(cornerData, get());
 
     get(); get();
-    std::getline(in, buf);
+    std::getline(ss, buf);
     return in;
 }
 
@@ -64,7 +72,7 @@ Reader::Reader() noexcept {
 }
 
 void Reader::read_async() {
-    constexpr std::chrono::duration<float, std::ratio<1>> seconds {1.0f/30.0f};
+    constexpr std::chrono::duration<float, std::ratio<1>> seconds {1.0f/5.0f};
     auto now = std::chrono::system_clock::now();
     Data data;
 
@@ -97,4 +105,30 @@ void Reader::set_selected(const std::string & elem) {
     file_data.clear();
 
     emscripten_async_call(+[](void* arg) { static_cast<Reader*>(arg)->read_async(); }, this, 0);
+}
+
+[[nodiscard]] std::vector<std::pair<ImVec2, ImColor>> Reader::get_points_at(float time) const {
+    auto it = std::lower_bound(file_data.begin(), file_data.end(), time, [](const Data& data, float time) {
+        return data.time < time;
+    });
+    ImColor c(255, 0, 0);
+    std::vector<std::pair<ImVec2, ImColor>> res;
+    if (it != file_data.end()) {
+        std::transform(std::begin(it->cam_data), std::end(it->cam_data),
+                       std::back_inserter(res), [&] (const Data::CamData& cd) {
+            return std::make_pair(cd.obj_type == ObjType::noDetection ? ImVec2{} : cd.d, c);
+        });
+        std::size_t ix{};
+
+        static ImColor c[4] { {255, 63, 0}, {255, 127, 0}, {255, 191, 0}, {255, 255, 0}};
+        for (auto& d : it->corner_data) {
+            std::transform(std::begin(d), std::end(d),
+                           std::back_inserter(res), [&] (const Data::CornerData& cd) {
+
+                    return std::make_pair(cd.d, c[ix++ % 4]);
+                });
+        }
+        res.erase(std::remove_if(res.begin(), res.end(), [](const std::pair<ImVec2, ImColor>& ic) { return ic.first.x == 0 && ic.first.y == 0; }), res.end());
+    }
+    return res;
 }
