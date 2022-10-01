@@ -1,8 +1,11 @@
 #ifndef HACK_LIKE_A_BOSCH_2022_GUI_H
 #define HACK_LIKE_A_BOSCH_2022_GUI_H
 
-#include <list>
+#include <vector>
 #include <string>
+#include <optional>
+#include <new>
+#include "reader.h"
 
 typedef struct SDL_Window SDL_Window;
 typedef union SDL_Event SDL_Event;
@@ -12,7 +15,8 @@ struct Context {
     SDL_Window *g_Window;
     SDL_GLContext g_GLContext;
     float scale;
-    std::list<std::string> logs { };
+    std::vector<std::string> logs;
+    std::optional<Reader> reader;
 
     explicit Context(SDL_Window*);
     void the_main_loop();

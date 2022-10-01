@@ -24,6 +24,7 @@ float Context::transform_size(const float& from) const {
 }
 
 void Context::init() {
+    reader.emplace();
 }
 
 void Context::create_log_window() {
@@ -54,6 +55,38 @@ void Context::add_things() {
 
 
     ImDrawList* p = GetWindowDrawList();
+
+
+
+    ImGui::SetNextWindowPos({0, io.DisplaySize.y - 30});
+    ImGui::SetNextWindowSize({300, 30});
+
+
+
+    ImGui::BeginDisabled(reader->loading);
+
+    if (ImGui::Begin("File chooser", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration)) {
+        ImGui::SetNextItemWidth(300);
+        if (ImGui::BeginCombo("##choose", reader->selected,
+                              ImGuiComboFlags_HeightSmall | ImGuiComboFlags_NoArrowButton)) {
+            for (auto &selectable: reader->directories)
+                if (ImGui::Selectable(selectable.c_str()))
+                    reader->set_selected(selectable);
+
+            ImGui::EndCombo();
+        }
+        ImGui::End();
+    }
+
+    if (reader->loading)
+        p->AddRectFilled({300, io.DisplaySize.y - 20},
+                       {300 +
+                        (io.DisplaySize.x - 300) *
+                        static_cast<float>(static_cast<double>(reader->curr) / static_cast<double>(reader->max)),
+                        io.DisplaySize.y},
+                       ImColor{1.f, 0.f, 0.f, 1.f});
+
+    ImGui::EndDisabled();
 
     /*
     p->AddRectFilled(transform_point({}), transform_point({100, 50}), ImColor{1.0f, 0.f, 0.f, 1.0f});

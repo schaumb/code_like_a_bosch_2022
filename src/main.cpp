@@ -15,6 +15,7 @@ Context::Context(SDL_Window* window)
     , g_GLContext(SDL_GL_CreateContext(g_Window))
     , scale{1.0}
 {
+    logs.reserve(50);
     init();
 }
 
@@ -89,7 +90,8 @@ void Context::the_main_loop()
 
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::SetNextWindowPos({});
-    ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
+    ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus
+        | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoScrollWithMouse);
     
     create_log_window();
     add_things();
