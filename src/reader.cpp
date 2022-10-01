@@ -104,7 +104,7 @@ void Reader::set_selected(const std::string & elem) {
         auto* ptr = static_cast<Reader*>(fetch->userData);
         ptr->loading = false;
     };
-    emscripten_fetch(&attr, ("/" / std::filesystem::path(elem) / "Group_349.csv").c_str());
+    emscripten_fetch(&attr, (std::filesystem::path(elem) / "Group_349.csv").c_str());
 }
 
 [[nodiscard]] std::vector<std::pair<ImVec2, ImColor>> Reader::get_points_at(float time) const {
