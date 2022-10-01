@@ -8,6 +8,7 @@ typedef void* SDL_GLContext;
 struct Context {
     SDL_Window *g_Window;
     SDL_GLContext g_GLContext;
+    float scale;
 
     explicit Context(SDL_Window*);
     void the_main_loop();
@@ -16,7 +17,8 @@ struct Context {
     void init();
     void event_handler(const SDL_Event&) {}
 
-    void add_things();
+    [[nodiscard]] ImVec2 transform_point(const ImVec2& from) const;
+    void add_things() const;
 };
 
 #endif //HACK_LIKE_A_BOSCH_2022_GUI_H

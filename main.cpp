@@ -13,6 +13,7 @@
 Context::Context(SDL_Window* window)
     : g_Window(window)
     , g_GLContext(SDL_GL_CreateContext(g_Window))
+    , scale{1.0}
 {
     init();
 }
@@ -98,7 +99,9 @@ void Context::the_main_loop()
     // Rendering
     ImGui::Render();
     SDL_GL_MakeCurrent(g_Window, g_GLContext);
-    glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+    glViewport(0, 0,
+               static_cast<int>(io.DisplaySize.x),
+               static_cast<int>(io.DisplaySize.y));
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(g_Window);
