@@ -57,7 +57,7 @@ Reader::Reader()
 }
 
 void Reader::read_async() {
-    constexpr std::chrono::duration<float, std::ratio<1>> seconds {1.0f/5.0f};
+    constexpr std::chrono::duration<float, std::ratio<1>> seconds {1.0f/30.0f};
     auto now = std::chrono::system_clock::now();
     Data data;
 
