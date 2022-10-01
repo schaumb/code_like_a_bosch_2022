@@ -36,8 +36,9 @@
 imgui-1.88
 .vscode
 
-# Builds
-index.data
-index.html
-index.js
-index.wasm
+# Builds 
+# These blocks the auto build
+# index.data
+# index.html
+# index.js
+# index.wasm
