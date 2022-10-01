@@ -30,7 +30,6 @@ int main(int, char**)
         return -1;
     }
 
-    const char* glsl_version = "#version 100";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -67,7 +66,7 @@ int main(int, char**)
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL2_InitForOpenGL(context.g_Window, context.g_GLContext);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImGui_ImplOpenGL3_Init("#version 100");
 
     emscripten_set_main_loop_arg(to_ptr<&Context::the_main_loop>, &context, 0, true);
 }
