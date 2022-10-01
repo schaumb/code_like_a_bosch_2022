@@ -121,7 +121,7 @@ void Context::add_things() {
         ImGui::End();
     }
 
-    if (reader->loading) {
+    if (reader->loading && reader->max > 0) {
         p->AddRectFilled({300, io.DisplaySize.y - 20},
                          {300 +
                           (io.DisplaySize.x - 300) *

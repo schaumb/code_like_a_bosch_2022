@@ -80,6 +80,7 @@ void Reader::set_selected(const std::string & elem) {
     selected = elem.c_str();
     loading = true;
     file_data.clear();
+    curr = max = 0;
 
     emscripten_fetch_attr_t attr;
     emscripten_fetch_attr_init(&attr);
@@ -90,7 +91,6 @@ void Reader::set_selected(const std::string & elem) {
         auto* ptr = static_cast<Reader*>(fetch->userData);
         ptr->max = fetch->numBytes;
         ptr->input.emplace(fetch->data);
-        ptr->curr = 0;
 
         std::string tmp;
         std::getline(*ptr->input, tmp);
