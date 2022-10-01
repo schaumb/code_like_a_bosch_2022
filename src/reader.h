@@ -1,0 +1,11 @@
+
+#ifndef HACK_LIKE_A_BOSCH_2022_READER_H
+#define HACK_LIKE_A_BOSCH_2022_READER_H
+
+
+class reader {
+
+};
+
+
+#endif //HACK_LIKE_A_BOSCH_2022_READER_H
