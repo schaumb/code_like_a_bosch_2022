@@ -156,25 +156,27 @@ void Context::add_things() {
     }
 
     // add car
-    p->AddRectFilled(transform_point({-0.6286, -3.4738}), transform_point({0.738, 0.7664}), ImColor{ .5f, .5f, .5f, 1.f });
+    p->AddRectFilled(transform_point({-0.738, -3.4738}), transform_point({0.738, 0.7664}), ImColor{ .5f, .5f, .5f, 1.f });
+    // add car tyres
+    for (auto&& point : {ImVec2{-0.738, 0}, {0.738, 0}, {-0.738, -3.4738 + 0.7664}, {0.738, -3.4738 + 0.7664}}) {
+        p->AddRectFilled(transform_point({point.x - 0.1f, point.y - 0.22f}), transform_point({point.x + 0.1f, point.y + 0.22f}), ImColor{.2f, .2f, .2f});
+    }
+
+    // add zero coord
+    p->AddCircle(transform_point({}), transform_size(0.1), ImColor{ .2f, .2f, .2f, 1.f });
+
 
     // add radars
     for (auto&& point : {ImVec2{0.6286, -3.4738}, {0.738, 0.7664}, {-0.6286, -3.4738}, {-0.738, 0.7664}}) {
-        p->AddCircleFilled(transform_point(point), transform_size(0.5), ImColor{0.f, 1.f, 0.f, 1.f});
+        p->AddCircleFilled(transform_point(point), transform_size(0.3), ImColor{0.f, 1.f, 0.f, 1.f});
     }
     // add front camera
-    p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.5), ImColor{0.f, 1.f, 1.f, 1.f});
+    p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), ImColor{0.f, 1.f, 1.f, 1.f});
 
-    /*
-    p->AddRectFilled(transform_point({}), transform_point({100, 50}), ImColor{1.0f, 0.f, 0.f, 1.0f});
-    p->AddCircleFilled(transform_point({-10, -10}), transform_size(9), ImColor{0.f, 0.f, 1.f, 1.f});
-    p->AddQuadFilled(transform_point({0, 0}), transform_point({-50, 10}), transform_point({-24, 15}), transform_point({-5, 21}), ImColor{0.f, 1.f, 1.f, 1.f});
-    */
+
 
    // Left line
    p->AddLine({5, 0}, { 5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
    // Right line
    p->AddLine({io.DisplaySize.x-5, 0}, { io.DisplaySize.x-5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
-
-   // p->AddCircle(transform_point({}), 50, ImColor{ 1.f, 0.f, 0.f, 1.f});
 }
