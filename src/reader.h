@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <optional>
-#include <fstream>
+#include <sstream>
 #include <deque>
 #include "imgui.h"
 
@@ -42,11 +42,11 @@ struct Reader {
     std::vector<std::string> directories;
     const char* selected = "<choose directory>";
     bool loading{};
-    std::optional<std::ifstream> input;
+    std::optional<std::stringstream> input;
     std::size_t max{}, curr{};
     std::deque<Data> file_data;
 
-    explicit Reader() noexcept;
+    explicit Reader();
 
     void set_selected(const std::string& elem);
     void read_async();

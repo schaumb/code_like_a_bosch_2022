@@ -40,5 +40,5 @@ jobs:
         uses: actions-x/commit@v6
         with:
           branch: web
-          files: index.html index.js index.wasm index.data
+          files: index.html index.js index.wasm
           force: true

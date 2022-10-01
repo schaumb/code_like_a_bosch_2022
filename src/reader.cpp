@@ -2,28 +2,23 @@
 #include "reader.h"
 #include <filesystem>
 #include <iostream>
-#include <fstream>
 #include <emscripten.h>
-#include <sstream>
+#include <emscripten/fetch.h>
 
 std::istream& operator>>(std::istream& in, Data& data) {
     std::string buf;
-    if (!std::getline(in, buf) || buf.empty()) {
+    if (!std::getline(in >> std::skipws, buf) || buf.empty() || buf.size() < 10) {
         in.setstate(std::ios::eofbit);
         return in;
     }
 
     std::stringstream ss{buf};
-    ss >> std::skipws;
 
-    if (!std::getline(ss, buf, ',') || buf.empty()) {
-        in.setstate(std::ios::eofbit);
-        return in;
+    auto get = [&] {
+        std::getline(ss, buf, ',');
+        return std::stof(buf);
     };
-    data.time = std::stof(buf);
-
-
-    auto get = [&] { std::getline(ss, buf, ','); return std::stof(buf); };
+    data.time = get();
     get(); // ignore sensor ts data
     for (auto& setter : {+[](Data::CamData& cd, float v) { cd.d.x = v / 128; },
                          +[](Data::CamData& cd, float v) { cd.d.y = v / 128; },
@@ -53,22 +48,12 @@ std::istream& operator>>(std::istream& in, Data& data) {
     return in;
 }
 
-Reader::Reader() noexcept {
-    struct {
-        decltype(directories)& dirs;
-        auto& operator*() { return *this; }
-        auto& operator++() { return *this; }
-        auto& operator=(const std::filesystem::directory_entry& e) {
-            dirs.emplace_back(e.path().filename());
-            return *this;
-        }
-    } output_iterator{directories};
-
-    std::copy_if(std::filesystem::directory_iterator("."), {}, output_iterator, [](auto&& e){
-        return std::filesystem::is_regular_file(e.path() / "Group_349.csv");
-    });
-
-
+Reader::Reader()
+    : directories {"PSA_ADAS_W3_FC_2022-09-01_14-49_0054.MF4",
+                   "PSA_ADAS_W3_FC_2022-09-01_15-03_0057.MF4",
+                   "PSA_ADAS_W3_FC_2022-09-01_15-12_0059.MF4",
+                   "PSA_ADAS_W3_FC_2022-09-01_15-17_0060.MF4"}
+{
 }
 
 void Reader::read_async() {
@@ -94,17 +79,32 @@ void Reader::set_selected(const std::string & elem) {
 
     selected = elem.c_str();
     loading = true;
-
-    input.emplace(std::filesystem::path(elem) / "Group_349.csv", std::ios::binary | std::ios::ate);
-    max = input->tellg();
-    curr = 0;
-    input->seekg(0, std::ios::seekdir::beg);
-
-    std::string tmp;
-    std::getline(*input, tmp); // read header
     file_data.clear();
 
-    emscripten_async_call(+[](void* arg) { static_cast<Reader*>(arg)->read_async(); }, this, 0);
+    emscripten_fetch_attr_t attr;
+    emscripten_fetch_attr_init(&attr);
+    strcpy(attr.requestMethod, "GET");
+    attr.userData = this;
+    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+    attr.onsuccess = +[] (emscripten_fetch_t *fetch) {
+        auto* ptr = static_cast<Reader*>(fetch->userData);
+        ptr->max = fetch->numBytes;
+        ptr->input.emplace(fetch->data);
+        ptr->curr = 0;
+
+        std::string tmp;
+        std::getline(*ptr->input, tmp);
+
+        emscripten_async_call(+[](void* arg) { static_cast<Reader*>(arg)->read_async(); }, ptr, 0);
+    };
+
+    attr.onerror = +[] (emscripten_fetch_t *fetch) {
+        printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
+        emscripten_fetch_close(fetch);
+        auto* ptr = static_cast<Reader*>(fetch->userData);
+        ptr->loading = false;
+    };
+    emscripten_fetch(&attr, ("/" / std::filesystem::path(elem) / "Group_349.csv").c_str());
 }
 
 [[nodiscard]] std::vector<std::pair<ImVec2, ImColor>> Reader::get_points_at(float time) const {

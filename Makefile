@@ -45,13 +45,13 @@ LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS
 # The Makefile for this example project suggests embedding the misc/fonts/ folder into our application, it will then be accessible as "/fonts"
 # See documentation for more details: https://emscripten.org/docs/porting/files/packaging_files.html
 # (Default value is 0. Set to 1 to enable file-system and include the misc/fonts/ folder as part of the build.)
-USE_FILE_SYSTEM ?= 1
+USE_FILE_SYSTEM ?= 0
 ifeq ($(USE_FILE_SYSTEM), 0)
-LDFLAGS += -s NO_FILESYSTEM=1
+LDFLAGS += -s NO_FILESYSTEM=1 -s FETCH
 CPPFLAGS += -DIMGUI_DISABLE_FILE_FUNCTIONS
 endif
 ifeq ($(USE_FILE_SYSTEM), 1)
-LDFLAGS += --no-heap-copy --preload-file PSA_ADAS_W3_FC_2022-09-01_14-49_0054.MF4 --preload-file PSA_ADAS_W3_FC_2022-09-01_15-03_0057.MF4 --preload-file PSA_ADAS_W3_FC_2022-09-01_15-12_0059.MF4 --preload-file PSA_ADAS_W3_FC_2022-09-01_15-17_0060.MF4
+LDFLAGS += --no-heap-copy
 endif
 
 ##---------------------------------------------------------------------
