@@ -1,6 +1,9 @@
 #ifndef HACK_LIKE_A_BOSCH_2022_GUI_H
 #define HACK_LIKE_A_BOSCH_2022_GUI_H
 
+#include <list>
+#include <string>
+
 typedef struct SDL_Window SDL_Window;
 typedef union SDL_Event SDL_Event;
 typedef void* SDL_GLContext;
@@ -9,6 +12,7 @@ struct Context {
     SDL_Window *g_Window;
     SDL_GLContext g_GLContext;
     float scale;
+    std::list<std::string> logs { };
 
     explicit Context(SDL_Window*);
     void the_main_loop();
@@ -22,6 +26,9 @@ struct Context {
     [[nodiscard]] float transform_size(const float& from) const;
 
     void add_things();
+    void create_log_window();
+
+    void add_log(std::string text) { logs.push_back(text); }
 };
 
 #endif //HACK_LIKE_A_BOSCH_2022_GUI_H

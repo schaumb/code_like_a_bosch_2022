@@ -34,3 +34,10 @@
 # Directories
 .idea
 imgui-1.88
+.vscode
+
+# Builds
+index.data
+index.html
+index.js
+index.wasm

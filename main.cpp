@@ -91,10 +91,15 @@ void Context::the_main_loop()
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::SetNextWindowPos({});
     ImGui::Begin("Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
-
+    
+    create_log_window();
     add_things();
+    
+    if (logs.size() < 50) 
+        add_log(std::to_string(logs.size()) + ": log");
 
     ImGui::End();
+
 
     // Rendering
     ImGui::Render();
