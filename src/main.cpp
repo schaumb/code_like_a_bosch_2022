@@ -95,9 +95,6 @@ void Context::the_main_loop()
     
     create_log_window();
     add_things();
-    
-    if (logs.size() < 50) 
-        add_log(std::to_string(logs.size()) + ": log");
 
     ImGui::End();
 
