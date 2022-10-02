@@ -5,11 +5,12 @@
 #include <algorithm>
 #include <ctime>
 
-constexpr std::string_view fakeLogs[4] = {
-    "Accident happened",
-    "Nothing creative",
-    "Almost crashed",
-    "Pedestrian in danger"
+constexpr std::string_view fakeLogs[5] = {
+    "Stopped car",
+    "Something fell off",
+    "Dangerous driving",
+    "Pedestrian on highway",
+    "Unkown stationary obstacle"
 };
 
 std::string currentDateTime() {
