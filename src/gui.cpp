@@ -164,7 +164,7 @@ void Context::add_things() {
     // add radars
     std::size_t ix{};
     for (auto&& point : Reader::cornerSensors) {
-        p->AddCircleFilled(transform_point(point), transform_size(0.3), cornerColors[ix++ % 4]);
+        p->AddCircleFilled(transform_point(point), transform_size(0.3), cornerColors[ix++]);
     }
     // add front camera
     p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), ImColor{0.f, 1.f, 1.f, 1.f});

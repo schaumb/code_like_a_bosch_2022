@@ -129,8 +129,10 @@ void Reader::set_selected(const std::string & elem) {
         for (auto& d : it->corner_data) {
             std::transform(std::begin(d), std::end(d),
                            std::back_inserter(res), [&] (const Data::CornerData& cd) {
-                    if (cd.d.x == 0 && cd.d.y == 0)
+                    if (cd.d.x == 0 && cd.d.y == 0) {
+                        ++ix;
                         return Object{};
+                    }
 
                     ImVec2 pos{cd.d.y + Reader::cornerSensors[ix].x, -cd.d.x + Reader::cornerSensors[ix].y};
                     return Object {
