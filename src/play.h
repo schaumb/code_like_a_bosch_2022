@@ -14,6 +14,8 @@ struct Play {
     bool end;
 
     [[nodiscard]] explicit Play(const Reader&);
+
+    void step(float deltaTime);
 };
 
 

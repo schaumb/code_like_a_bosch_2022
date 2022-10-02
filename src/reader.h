@@ -39,6 +39,13 @@ struct Data {
     friend std::istream &operator>>(std::istream &in, Data &data);
 };
 
+struct Object {
+    ImVec2 min;
+    ImVec2 max;
+    ObjType something;
+    ImColor color;
+};
+
 struct Reader {
     std::vector<std::string> directories;
     const char* selected = "<choose directory>";
@@ -52,10 +59,10 @@ struct Reader {
     void set_selected(const std::string& elem);
     void read_async();
 
-    inline static auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
-    inline static auto camSensor = ImVec2{0, -1.7826001f - 3.4738f - 0.7664f};
+    inline static const auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
+    inline static const auto camSensor = ImVec2{0, -1.7826001f - 3.4738f - 0.7664f};
 
-    [[nodiscard]] std::vector<std::pair<ImVec2, std::optional<std::size_t>>> get_points_at(float time) const;
+    [[nodiscard]] std::vector<Object> get_objects_at(float time) const;
 };
 
 

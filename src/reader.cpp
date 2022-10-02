@@ -4,6 +4,7 @@
 #include <iostream>
 #include <emscripten.h>
 #include <emscripten/fetch.h>
+#include "gui.h"
 
 std::istream& operator>>(std::istream& in, Data& data) {
     std::string buf;
@@ -107,27 +108,37 @@ void Reader::set_selected(const std::string & elem) {
     emscripten_fetch(&attr, ("." / std::filesystem::path(elem) / "Group_349.csv").c_str());
 }
 
-[[nodiscard]] std::vector<std::pair<ImVec2, std::optional<std::size_t>>> Reader::get_points_at(float time) const {
+[[nodiscard]] std::vector<Object> Reader::get_objects_at(float time) const {
     auto it = std::lower_bound(file_data.begin(), file_data.end(), time, [](const Data& data, float time) {
         return data.time < time;
     });
-    std::vector<std::pair<ImVec2, std::optional<std::size_t>>> res;
+    std::vector<Object> res;
     if (it != file_data.end()) {
         std::transform(std::begin(it->cam_data), std::end(it->cam_data),
                        std::back_inserter(res), [&] (const Data::CamData& cd) {
-            return std::make_pair(cd.obj_type == ObjType::noDetection ? ImVec2{} :
-                                  ImVec2{cd.d.y + Reader::camSensor.x, -cd.d.x + Reader::camSensor.y}, std::nullopt);
+            if (cd.obj_type == ObjType::noDetection)
+                return Object {};
+
+            ImVec2 pos{cd.d.y + Reader::camSensor.x, -cd.d.x + Reader::camSensor.y};
+            return Object {
+                pos, pos, cd.obj_type, Context::camColor
+            };
         });
         std::size_t ix{};
 
         for (auto& d : it->corner_data) {
             std::transform(std::begin(d), std::end(d),
                            std::back_inserter(res), [&] (const Data::CornerData& cd) {
-                    ImVec2 p{cd.d.y + Reader::cornerSensors[ix].x, -cd.d.x + Reader::cornerSensors[ix].y};
-                    return std::make_pair(p, ix++ % 4);
+                    if (cd.d.x == 0 && cd.d.y == 0)
+                        return Object{};
+
+                    ImVec2 pos{cd.d.y + Reader::cornerSensors[ix].x, -cd.d.x + Reader::cornerSensors[ix].y};
+                    return Object {
+                        pos, pos, {}, Context::cornerColors[ix++ % 4]
+                    };
                 });
         }
-        res.erase(std::remove_if(res.begin(), res.end(), [](const std::pair<ImVec2, std::optional<std::size_t>>& ic) { return ic.first.x == 0 && ic.first.y == 0; }), res.end());
+        res.erase(std::remove_if(res.begin(), res.end(), [](const Object& ic) { return ic.min.x == 0 && ic.min.y == 0; }), res.end());
     }
     return res;
 }

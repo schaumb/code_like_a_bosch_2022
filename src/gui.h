@@ -40,7 +40,8 @@ struct Context {
     }
 
 
-    static inline ImColor cornerColors[4] = { {255, 63, 0}, {255, 127, 30}, {255, 191, 50}, {255, 230, 0}};
+    static inline const ImColor cornerColors[4] = { {255, 63, 0}, {255, 127, 30}, {255, 191, 50}, {255, 230, 0}};
+    static inline const ImColor camColor = ImColor(255, 0, 0);
 };
 
 #endif //HACK_LIKE_A_BOSCH_2022_GUI_H

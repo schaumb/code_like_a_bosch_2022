@@ -134,25 +134,13 @@ void Context::add_things() {
 
     if (!reader->loading && !reader->file_data.empty() && !player) {
         player.emplace(*reader);
-        player->time = static_cast<float>(reader->file_data.front().time);
     } else if (player && !player->end) {
-        player->time += io.DeltaTime;
-        if (player->time > reader->file_data.back().time) {
-            player->end = true;
-        }
+        player->step(io.DeltaTime);
     }
     if (player && !player->end) {
-        auto&& list = reader->get_points_at(player->time);
-
-        for (auto& [point, sensor] : list) {
-            if (sensor) {
-                p->AddCircleFilled(transform_point(point),
-                                   transform_size(0.4), cornerColors[*sensor]);
-
-            } else {
-                p->AddCircleFilled(transform_point(point), transform_size(0.4), ImColor(255, 0, 0));
-
-            }
+        for (auto& o : reader->get_objects_at(player->time)) {
+            p->AddCircleFilled(transform_point({(o.min.x + o.max.x)/2.f, (o.min.y + o.max.y) / 2.f}),
+                               transform_size(0.4), o.color);
         }
     }
     static_assert(ImGuiKey_L == 557);
