@@ -16,7 +16,7 @@ struct Context {
     SDL_Window *g_Window;
     SDL_GLContext g_GLContext;
     float scale;
-    std::vector<std::string> logs;
+    std::deque<std::string> logs;
     std::optional<Reader> reader;
     std::optional<Play> player;
 
@@ -35,7 +35,12 @@ struct Context {
     void add_things();
     void create_log_window();
 
-    void add_log(std::string text) { logs.push_back(text); }
+    void add_log(std::string&& text) {
+        logs.emplace_back(text);
+    }
+
+
+    static inline ImColor cornerColors[4] = { {255, 63, 0}, {255, 127, 30}, {255, 191, 50}, {255, 230, 0}};
 };
 
 #endif //HACK_LIKE_A_BOSCH_2022_GUI_H

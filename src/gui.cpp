@@ -4,6 +4,7 @@
 #include <cmath>
 #include <algorithm>
 #include <ctime>
+#include <array>
 
 constexpr std::string_view fakeLogs[4] = {
     "Accident happened",
@@ -141,11 +142,19 @@ void Context::add_things() {
             player->end = true;
         }
     }
+    static auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
     if (player && !player->end) {
         auto&& list = reader->get_points_at(player->time);
 
-        for (auto& [point, color] : list) {
-            p->AddCircleFilled(transform_point({point.y, -point.x}), transform_size(0.4), color);
+        for (auto& [point, sensor] : list) {
+            if (sensor) {
+                p->AddCircleFilled(transform_point({point.y + cornerSensors[*sensor].x, -point.x + cornerSensors[*sensor].y}),
+                                   transform_size(0.4), cornerColors[*sensor]);
+
+            } else {
+                p->AddCircleFilled(transform_point({point.y, -point.x -1.7826001f - 3.4738f - 0.7664f}), transform_size(0.4), ImColor(255, 0, 0));
+
+            }
         }
     }
     static_assert(ImGuiKey_L == 557);
@@ -167,8 +176,9 @@ void Context::add_things() {
 
 
     // add radars
-    for (auto&& point : {ImVec2{0.6286, -3.4738}, {0.738, 0.7664}, {-0.6286, -3.4738}, {-0.738, 0.7664}}) {
-        p->AddCircleFilled(transform_point(point), transform_size(0.3), ImColor{0.f, 1.f, 0.f, 1.f});
+    std::size_t ix{};
+    for (auto&& point : cornerSensors) {
+        p->AddCircleFilled(transform_point(point), transform_size(0.3), cornerColors[ix++ % 4]);
     }
     // add front camera
     p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), ImColor{0.f, 1.f, 1.f, 1.f});

@@ -51,7 +51,7 @@ struct Reader {
     void set_selected(const std::string& elem);
     void read_async();
 
-    [[nodiscard]] std::vector<std::pair<ImVec2, ImColor>> get_points_at(float time) const;
+    [[nodiscard]] std::vector<std::pair<ImVec2, std::optional<std::size_t>>> get_points_at(float time) const;
 };
 
 
