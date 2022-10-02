@@ -134,15 +134,37 @@ void Context::add_things() {
 
     if (!reader->loading && !reader->file_data.empty() && !player) {
         player.emplace(*reader);
-    } else if (player && !player->end) {
+    } else if (player) {
         player->step(io.DeltaTime);
     }
+
+    if (player) {
+        ImGui::SetNextWindowPos({0, 0});
+        ImGui::SetNextWindowSize({300, -1});
+
+        if (ImGui::Begin("Player", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
+
+            ImGui::SliderFloat("Time", &player->time, player->timeRange.x, player->timeRange.y, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+            ImGui::SliderFloat("Speed", &player->speed, 0.1f, 10.f);
+            if (ImGui::Checkbox("Play", &player->play)) {
+                if (player->play) {
+                    player->end = false;
+                    if (player->time >= player->timeRange.y) {
+                        player->time = player->timeRange.x;
+                    }
+                }
+            }
+            ImGui::End();
+        }
+    }
+
     if (player && !player->end) {
         for (auto& o : reader->get_objects_at(player->time)) {
             p->AddCircleFilled(transform_point({(o.min.x + o.max.x)/2.f, (o.min.y + o.max.y) / 2.f}),
                                transform_size(0.4), o.color);
         }
     }
+
     static_assert(ImGuiKey_L == 557);
     if (ImGui::IsKeyReleased(ImGuiKey_L)) {
         std::string_view textToLog = fakeLogs[rand() % 4];
@@ -167,7 +189,7 @@ void Context::add_things() {
         p->AddCircleFilled(transform_point(point), transform_size(0.3), cornerColors[ix++]);
     }
     // add front camera
-    p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), ImColor{0.f, 1.f, 1.f, 1.f});
+    p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), camColor);
 
 
 

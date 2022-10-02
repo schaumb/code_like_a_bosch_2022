@@ -14,10 +14,14 @@ Play::Play(const Reader& r)
 }
 
 void Play::step(float deltaTime) {
+    if (end || !play)
+        return;
+
     auto next = time + deltaTime * speed;
     if (next >= timeRange.y) {
         time = timeRange.y;
         end = true;
+        play = false;
     } else {
         time = next;
     }
