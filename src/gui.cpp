@@ -27,8 +27,8 @@ ImVec2 Context::transform_point(const ImVec2& from) const {
     ImGuiIO& io = GetIO();
 
     return {
-        from.x * scale + io.DisplaySize.x / 2,
-        from.y * scale + io.DisplaySize.y / 2
+        -from.x * scale + io.DisplaySize.x / 2,
+        (from.y - (0.7664f-3.4738f)/2) * scale + io.DisplaySize.y / 2
     };
 }
 
@@ -56,10 +56,12 @@ void Context::draw_background() {
     // Right line
     p->AddLine({io.DisplaySize.x-5, 0}, { io.DisplaySize.x-5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
     // Middle dotted line
+    /* Ezt az autó 2 oldalához kellene tenni
     for (int i = 0; i < 10; ++i) {
         auto y = static_cast<float>(-45 + i * 25);
         p->AddRectFilled(transform_point({-0.5f, y}), transform_point({0.5f, y - 10}), ImColor{ 1.f, 1.f, 1.f, 1.f });
     }
+     */
 }
 
 void Context::init() {
@@ -91,7 +93,7 @@ void Context::create_log_window() {
 void Context::add_things() {
     using namespace ImGui;
     ImGuiIO& io = GetIO();
-    scale = std::fmin(io.DisplaySize.x / 20, io.DisplaySize.y / 50);
+    scale = std::fmin(io.DisplaySize.x / 10, io.DisplaySize.y / 25);
 
 
     ImDrawList* p = GetWindowDrawList();
@@ -121,11 +123,15 @@ void Context::add_things() {
         ImGui::End();
     }
 
-    if (reader->loading && reader->max > 0) {
+    if (reader->loading && ((reader->hostInput && reader->hostInput->max) || (reader->sensorInput && reader->sensorInput->max))) {
         p->AddRectFilled({300, io.DisplaySize.y - 20},
                          {300 +
                           (io.DisplaySize.x - 300) *
-                          static_cast<float>(static_cast<double>(reader->curr) / static_cast<double>(reader->max)),
+                          static_cast<float>(static_cast<double>(
+                                                 (reader->hostInput ? reader->hostInput->curr : 0.0) +
+                                                     (reader->sensorInput ? reader->sensorInput->curr : 0.0)
+                              ) / static_cast<double>((reader->hostInput ? reader->hostInput->max : 0.0) +
+                                                      (reader->sensorInput ? reader->sensorInput->max : 0.0))),
                           io.DisplaySize.y},
                          ImColor{1.f, 0.f, 0.f, 1.f});
     }
@@ -181,6 +187,13 @@ void Context::add_things() {
 
     // add zero coord
     p->AddCircle(transform_point({}), transform_size(0.1), ImColor{ .2f, .2f, .2f, 1.f });
+    // car speed
+
+    if (player) {
+        p->AddText(transform_point({0.7, -0.8}), ImColor(255, 255, 255),
+                   (std::to_string(static_cast<int>(std::round(reader->get_speed_at(player->time)))) + " km/h").c_str());
+    }
+
 
 
     // add radars
@@ -190,11 +203,4 @@ void Context::add_things() {
     }
     // add front camera
     p->AddCircleFilled(transform_point({0, -1.7826001}), transform_size(0.3), camColor);
-
-
-
-   // Left line
-   p->AddLine({5, 0}, { 5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
-   // Right line
-   p->AddLine({io.DisplaySize.x-5, 0}, { io.DisplaySize.x-5, io.DisplaySize.y }, ImColor{1.f,1.f,1.f,1.f}, 5);
 }

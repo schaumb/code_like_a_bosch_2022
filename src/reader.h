@@ -21,7 +21,7 @@ enum class ObjType {
     carOrTruck = 6U
 };
 
-struct Data {
+struct SensorData {
     double time{};
     struct CamData {
         ImVec2 d;
@@ -36,7 +36,16 @@ struct Data {
         float prob{};
     } corner_data[10][4];
 
-    friend std::istream &operator>>(std::istream &in, Data &data);
+    friend std::istream &operator>>(std::istream &in, SensorData &data);
+};
+
+struct HostData {
+    float time;
+    ImVec2 v;
+    ImVec2 a;
+    float psiZ;
+
+    friend std::istream &operator>>(std::istream &in, HostData &data);
 };
 
 struct Object {
@@ -49,20 +58,34 @@ struct Object {
 struct Reader {
     std::vector<std::string> directories;
     const char* selected = "<choose directory>";
-    bool loading{};
-    std::optional<std::stringstream> input;
-    std::size_t max{}, curr{};
-    std::deque<Data> file_data;
+    int loading{};
+    struct InRead {
+        std::stringstream ss;
+        std::size_t max, curr;
+
+        [[nodiscard]] InRead(const char* data, std::size_t size)
+            : ss(data)
+            , max(size)
+            , curr{}
+        {}
+    };
+
+    std::optional<InRead> sensorInput, hostInput;
+
+    std::deque<SensorData> file_data;
+    std::deque<HostData> host_data;
 
     explicit Reader();
 
     void set_selected(const std::string& elem);
+    template<class InMPtr, class DMPtr>
     void read_async();
 
     inline static const auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
     inline static const auto camSensor = ImVec2{0, -1.7826001f - 3.4738f - 0.7664f};
 
     [[nodiscard]] std::vector<Object> get_objects_at(float time) const;
+    [[nodiscard]] float get_speed_at(float time) const;
 };
 
 
