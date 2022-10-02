@@ -15,7 +15,6 @@ Context::Context(SDL_Window* window)
     , g_GLContext(SDL_GL_CreateContext(g_Window))
     , scale{1.0}
 {
-    logs.reserve(50);
     init();
 }
 
