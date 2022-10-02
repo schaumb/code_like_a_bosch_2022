@@ -7,6 +7,7 @@
 #include <optional>
 #include <sstream>
 #include <deque>
+#include <array>
 #include "imgui.h"
 
 
@@ -50,6 +51,9 @@ struct Reader {
 
     void set_selected(const std::string& elem);
     void read_async();
+
+    inline static auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
+    inline static auto camSensor = ImVec2{0, -1.7826001f - 3.4738f - 0.7664f};
 
     [[nodiscard]] std::vector<std::pair<ImVec2, std::optional<std::size_t>>> get_points_at(float time) const;
 };

@@ -4,7 +4,6 @@
 #include <cmath>
 #include <algorithm>
 #include <ctime>
-#include <array>
 
 constexpr std::string_view fakeLogs[4] = {
     "Accident happened",
@@ -142,17 +141,16 @@ void Context::add_things() {
             player->end = true;
         }
     }
-    static auto cornerSensors = std::array<ImVec2, 4>{{{0.6286, -3.4738}, {-0.6286, -3.4738}, {0.738, 0.7664}, {-0.738, 0.7664}}};
     if (player && !player->end) {
         auto&& list = reader->get_points_at(player->time);
 
         for (auto& [point, sensor] : list) {
             if (sensor) {
-                p->AddCircleFilled(transform_point({point.y + cornerSensors[*sensor].x, -point.x + cornerSensors[*sensor].y}),
+                p->AddCircleFilled(transform_point(point),
                                    transform_size(0.4), cornerColors[*sensor]);
 
             } else {
-                p->AddCircleFilled(transform_point({point.y, -point.x -1.7826001f - 3.4738f - 0.7664f}), transform_size(0.4), ImColor(255, 0, 0));
+                p->AddCircleFilled(transform_point(point), transform_size(0.4), ImColor(255, 0, 0));
 
             }
         }
@@ -177,7 +175,7 @@ void Context::add_things() {
 
     // add radars
     std::size_t ix{};
-    for (auto&& point : cornerSensors) {
+    for (auto&& point : Reader::cornerSensors) {
         p->AddCircleFilled(transform_point(point), transform_size(0.3), cornerColors[ix++ % 4]);
     }
     // add front camera
